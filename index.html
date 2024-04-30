@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品列表</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<div id="container">
+
+<h2>精酿</h2>
+<ul>
+    <li class="item"><div class="item-info"><span class="item-name">好嘢菌酸艾尔</span><span class="price">价格：￥68</span></div><div class="quantity"><button onclick="changeQuantity(this, -1)">-</button><input type="number" value="0" id="qty1"><button class="plus-button" onclick="changeQuantity(this, 1)">+</button></div></li>
+    <li class="item"><div class="item-info"><span class="item-name">柑橘之梦</span><span class="price">价格：￥58</span></div><div class="quantity"><button onclick="changeQuantity(this, -1)">-</button><input type="number" value="0" id="qty2"><button class="plus-button" onclick="changeQuantity(this, 1)">+</button></div></li>
+    <li class="item"><div class="item-info"><span class="item-name">血浓于水</span><span class="price">价格：￥58</span></div><div class="quantity"><button onclick="changeQuantity(this, -1)">-</button><input type="number" value="0" id="qty3"><button class="plus-button" onclick="changeQuantity(this, 1)">+</button></div></li>
+    <li class="item"><div class="item-info"><span class="item-name">布雷特野菌酸艾尔</span><span class="price">价格：￥58</span></div><div class="quantity"><button onclick="changeQuantity(this, -1)">-</button><input type="number" value="0" id="qty4"><button class="plus-button" onclick="changeQuantity(this, 1)">+</button></div></li>
+    <li class="item"><div class="item-info"><span class="item-name">西莉妹妹西打</span><span class="price">价格：￥48</span></div><div class="quantity"><button onclick="changeQuantity(this, -1)">-</button><input type="number" value="0" id="qty5"><button class="plus-button" onclick="changeQuantity(this, 1)">+</button></div></li>
+    <li class="item"><div class="item-info"><span class="item-name">阿瓦达啃大瓜西打</span><span class="price">价格：￥48</span></div><div class="quantity"><button onclick="changeQuantity(this, -1)">-</button><input type="number" value="0" id="qty6"><button class="plus-button" onclick="changeQuantity(this, 1)">+</button></div></li>
+	<li class="item"><div class="item-info"><span class="item-name">传统皮尔森</span><span class="price">价格：￥38</span></div><div class="quantity"><button onclick="changeQuantity(this, -1)">-</button><input type="number" value="0" id="qty6"><button class="plus-button" onclick="changeQuantity(this, 1)">+</button></div></li>
+	<li class="item"><div class="item-info"><span class="item-name">爆米花拉格</span><span class="price">价格：￥38</span></div><div class="quantity"><button onclick="changeQuantity(this, -1)">-</button><input type="number" value="0" id="qty6"><button class="plus-button" onclick="changeQuantity(this, 1)">+</button></div></li>
+</ul>
+
+<h2>鸡尾酒</h2>
+<ul>
+    <li class="item"><div class="item-info"><span class="item-name">「酵」劲菠萝头</span><span class="price">价格：￥78</span></div><div class="quantity"><button onclick="changeQuantity(this, -1)">-</button><input type="number" value="0" id="qty7"><button class="plus-button" onclick="changeQuantity(this, 1)">+</button></div></li>
+    <li class="item"><div class="item-info"><span class="item-name">Espresso Martini</span><span class="price">价格：￥68</span></div><div class="quantity"><button onclick="changeQuantity(this, -1)">-</button><input type="number" value="0" id="qty8"><button class="plus-button" onclick="changeQuantity(this, 1)">+</button></div></li>
+    <li class="item"><div class="item-info"><span class="item-name">山茶花酸</span><span class="price">价格：￥68</span></div><div class="quantity"><button onclick="changeQuantity(this, -1)">-</button><input type="number" value="0" id="qty9"><button class="plus-button" onclick="changeQuantity(this, 1)">+</button></div></li>
+    <li class="item"><div class="item-info"><span class="item-name">Free Bola</span><span class="price">价格：￥48</span></div><div class="quantity"><button onclick="changeQuantity(this, -1)">-</button><input type="number" value="0" id="qty10"><button class="plus-button" onclick="changeQuantity(this, 1)">+</button></div></li>
+    <li class="item"><div class="item-info"><span class="item-name">柠叶气泡特调</span><span class="price">价格：￥48</span></div><div class="quantity"><button onclick="changeQuantity(this, -1)">-</button><input type="number" value="0" id="qty11"><button class="plus-button" onclick="changeQuantity(this, 1)">+</button></div></li>
+    <li class="item"><div class="item-info"><span class="item-name">桑格利亚</span><span class="price">价格：￥38</span></div><div class="quantity"><button onclick="changeQuantity(this, -1)">-</button><input type="number" value="0" id="qty12"><button class="plus-button" onclick="changeQuantity(this, 1)">+</button></div></li>
+	<li class="item"><div class="item-info"><span class="item-name">山茶花嗨啵</span><span class="price">价格：￥38</span></div><div class="quantity"><button onclick="changeQuantity(this, -1)">-</button><input type="number" value="0" id="qty12"><button class="plus-button" onclick="changeQuantity(this, 1)">+</button></div></li>
+	<li class="item"><div class="item-info"><span class="item-name">Summer Gin Tonic</span><span class="price">价格：￥38</span></div><div class="quantity"><button onclick="changeQuantity(this, -1)">-</button><input type="number" value="0" id="qty12"><button class="plus-button" onclick="changeQuantity(this, 1)">+</button></div></li>
+</ul>
+
+<h2>无酒精</h2>
+<ul>
+    <li class="item"><div class="item-info"><span class="item-name">辣·泰妹</span><span class="price">价格：￥48</span></div><div class="quantity"><button onclick="changeQuantity(this, -1)">-</button><input type="number" value="0" id="qty13"><button class="plus-button" onclick="changeQuantity(this, 1)">+</button></div></li>
+    <li class="item"><div class="item-info"><span class="item-name">Non-A Bola</span><span class="price">价格：￥18</span></div><div class="quantity"><button onclick="changeQuantity(this, -1)">-</button><input type="number" value="0" id="qty14"><button class="plus-button" onclick="changeQuantity(this, 1)">+</button></div></li>
+</ul>
+
+<div id="total-price">总价：￥<span id="total">0.00</span></div>
+
+<button onclick="checkout()">结算</button>
+
+<!-- 模态框 -->
+<div id="myModal" class="modal">
+  <span class="close">&times;</span>
+  <img class="modal-content" id="img01" src="1" alt="商品图片">
+</div>
+
+<div id="sales-data">
+    <h2>销售数据</h2>
+    <h3>精酿</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>商品名称</th>
+                <th>销售数量</th>
+                <th>销售额</th>
+                <th>销售占比</th>
+            </tr>
+        </thead>
+        <tbody id="sales-table-body-1">
+        </tbody>
+    </table>
+    <h3>鸡尾酒</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>商品名称</th>
+                <th>销售数量</th>
+                <th>销售额</th>
+                <th>销售占比</th>
+            </tr>
+        </thead>
+        <tbody id="sales-table-body-2">
+        </tbody>
+    </table>
+    <h3>无酒精</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>商品名称</th>
+                <th>销售数量</th>
+                <th>销售额</th>
+                <th>销售占比</th>
+            </tr>
+        </thead>
+        <tbody id="sales-table-body-3">
+        </tbody>
+    </table>
+	 <h3>总计</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>总销售数量</th>
+                <th>总销售额</th>
+            </tr>
+        </thead>
+        <tbody id="total-sales-data">
+            <tr>
+                <td id="total-quantity">0</td>
+                <td id="total-sales-amount">￥0.00</td>
+            </tr>
+        </tbody>
+    </table>
+	<button id="clearButton" onclick="clearAll()">清空</button>
+	<button onclick="exportToExcel()">导出Excel</button>
+</div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
