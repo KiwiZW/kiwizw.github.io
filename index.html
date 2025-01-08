@@ -69,7 +69,7 @@
     let round = 1; // 当前轮次
     let numbers = []; // 存储可抽的号码
     for (let i = 1; i <= 100; i++) {
-      numbers.push(i);
+      if (i !== 46) numbers.push(i); // 初始化时排除数字 46
     }
 
     // 随机打乱数组
