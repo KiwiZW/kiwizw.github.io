@@ -14,55 +14,106 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background: url('1.jpg') no-repeat center center fixed; /* 壁纸代码 */
-      background-size: cover; /* 让壁纸覆盖整个背景 */
-    }
-    .container {
-      width: 90%;
-      max-width: 800px;
-      padding: 30px;
-      background: rgba(0, 0, 0, 0); /* 半透明背景 */
-      border-radius: 20px;
+      background: url('1.jpg') no-repeat center center fixed; /* 替换为实际图片路径 */
+      background-size: cover;
     }
     .title {
-      font-size: 3.5rem; /* 调整标题字体大小 */
+      font-size: 3.5rem;
       margin: 10px 0;
-	  color: #f6ac65;
+      color: #f6ac65;
     }
     .subtitle {
-      font-size: 2.2rem; /* 调整小标题字体大小 */
-	  font-weight: 900;
+      font-size: 2.2rem;
+      font-weight: 900;
       margin: 20px 0;
-      color: #ffff00; /* 小标题颜色 */
+      color: #ffff00;
     }
     .numbers {
-      font-size: 4.5rem; /* 调整数字显示大小 */
+      font-size: 4.5rem;
       font-weight: bold;
       margin: 30px 0;
-      color: #f6ac65; /* 数字颜色 */
+      color: #f6ac65;
     }
     .button {
       padding: 15px 40px;
-      font-size: 1.8rem; /* 按钮字体大小 */
+      font-size: 1.8rem;
       color: #FFFFFF;
       background-color: #bd1b23;
       border: none;
       border-radius: 10px;
       cursor: pointer;
       transition: background-color 0.3s, transform 0.2s;
+      width: 250px;
+      margin-top: 20px;
     }
     .button:hover {
       background-color: #ff5e7e;
-      transform: scale(1.05); /* 鼠标悬停时轻微放大效果 */
+      transform: scale(1.05);
+    }
+    .button[disabled] {
+      opacity: 1;
+    }
+
+    /* 弹窗样式 */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      width: 300px; /* 修改宽度来缩小弹窗 */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .modal p {
+      font-size: 1.5rem;
+      margin: 20px 0;
+    }
+    .modal button {
+      padding: 10px 25px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      margin: 10px;
+      transition: background-color 0.3s;
+    }
+    .modal button:hover {
+      background-color: #45a049;
+    }
+    .modal button#noButton {
+      background-color: #f44336;
+    }
+    .modal button#noButton:hover {
+      background-color: #e53935;
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div>
     <h1 class="title">幸运抽奖</h1>
     <p class="subtitle" id="subtitle">准备开始抽奖</p>
     <div class="numbers" id="numbers">000</div>
     <button class="button" id="startButton">开始抽奖</button>
+  </div>
+
+  <!-- 弹窗 -->
+  <div id="confirmationModal" class="modal">
+    <div class="modal-content">
+      <p>是否进行下一轮</p>
+      <button id="yesButton">是</button>
+      <button id="noButton">否</button>
+    </div>
   </div>
 
   <script>
@@ -79,7 +130,7 @@
         [arr[i], arr[j]] = [arr[j], arr[i]];
       }
     }
-    
+
     shuffleArray(numbers); // 打乱数组
 
     // 获取当前小标题
@@ -98,49 +149,125 @@
       numberDisplay.textContent = results.join(', ');
     }
 
+    function disableButtonAndChangeText() {
+      const startButton = document.getElementById('startButton');
+      startButton.textContent = "下一轮"; // 改为“下一轮”
+      startButton.disabled = true; // 禁用按钮
+    }
+
+    function resetButton() {
+      const startButton = document.getElementById('startButton');
+      startButton.textContent = "开始抽奖"; // 恢复为“开始抽奖”
+      startButton.disabled = false; // 启用按钮
+    }
+
+    function clearResults() {
+      const numberDisplay = document.getElementById('numbers');
+      numberDisplay.textContent = "000"; // 清空数字显示
+    }
+
+    // 打开弹窗
+    function openModal() {
+      const modal = document.getElementById('confirmationModal');
+      modal.style.display = "flex";
+    }
+
+    // 关闭弹窗
+    function closeModal() {
+      const modal = document.getElementById('confirmationModal');
+      modal.style.display = "none";
+    }
+
+    // 确认是否进行下一轮
+    function proceedToNextRound() {
+      const subtitleDisplay = document.getElementById('subtitle');
+      subtitleDisplay.textContent = getSubtitle(round); // 更新为当前轮奖品标题
+      clearResults(); // 清空显示的数字
+      resetButton(); // 恢复为“开始抽奖”
+      closeModal(); // 关闭弹窗
+    }
+
     document.getElementById('startButton').addEventListener('click', () => {
       const numberDisplay = document.getElementById('numbers');
       const subtitleDisplay = document.getElementById('subtitle');
+      const startButton = document.getElementById('startButton');
       let results = [];
       const duration = 3000; // 动画持续时间 3秒
       const interval = 50; // 每50ms刷新一次数字
       let startTime = Date.now();
 
+      // 如果按钮文本是“下一轮”，就表示前一轮结束，开始新一轮抽奖
+      if (startButton.textContent === "下一轮") {
+        if (round > 7) {
+          startButton.textContent = "抽奖结束"; // 设置为“抽奖结束”
+          startButton.disabled = true; // 禁用按钮
+          return;
+        }
+        openModal(); // 显示弹窗，确认是否进行下一轮
+        return; // 跳过当前抽奖步骤
+      }
+
+      // 在第一次点击“开始抽奖”时，更新标题为对应奖品
+      if (round === 1) {
+        subtitleDisplay.textContent = getSubtitle(round); // 更新为第一轮奖品标题
+      }
+
       let timer = setInterval(() => {
         let elapsedTime = Date.now() - startTime;
+
+        // 禁用“下一轮”按钮直到结果显示
+        startButton.disabled = true;
 
         if (elapsedTime >= duration) {
           clearInterval(timer);
 
           if (round === 1) {
-            results = numbers.splice(0, 6); // 第一次，输出6个号码
+            results = numbers.splice(0, 5); // 第一轮，输出5个号码
           } else if (round >= 2 && round <= 4) {
-            results = numbers.splice(0, 5); // 第二到第四次，输出5个号码
+            results = numbers.splice(0, 5); // 第二到第四轮，输出5个号码
           } else if (round === 6) {
-            results = [46]; // 第六次，固定输出46
+            results = [46]; // 第六轮，固定输出46
           } else {
-            results = [numbers.shift()]; // 后续每次输出一个号码
+            results = [numbers.shift()]; // 后续每轮输出一个号码
           }
-
-          // 更新小标题
-          subtitleDisplay.textContent = getSubtitle(round);
 
           // 显示抽奖结果
           displayResults(results);
+
+          // 确保46不会再出现
+          if (round === 6) {
+            numbers = numbers.filter(num => num !== 46);
+          }
+
+          // 轮次递增
           round++;
 
-          if (numbers.length === 0) {
-            alert("所有号码已抽完！");
-            document.getElementById('startButton').disabled = true; // 禁用抽奖按钮
+          // 如果是第七轮，直接禁用按钮并显示“抽奖结束”
+          if (round > 7) {
+            startButton.textContent = "抽奖结束"; // 改为“抽奖结束”
+            startButton.disabled = true; // 禁用按钮
+            return;
           }
+
+          // 抽奖结束后，替换按钮文本为“下一轮”
+          disableButtonAndChangeText();
+
+          // 启用“下一轮”按钮
+          startButton.disabled = false;
         } else {
           // 显示滚动数字效果
-          numberDisplay.textContent = Math.floor(Math.random() * 150 + 1)
+          numberDisplay.textContent = Math.floor(Math.random() * 100 + 1)
             .toString()
             .padStart(3, '0');
         }
       }, interval);
     });
+
+    // "是"按钮点击事件
+    document.getElementById('yesButton').addEventListener('click', proceedToNextRound);
+
+    // "否"按钮点击事件
+    document.getElementById('noButton').addEventListener('click', closeModal);
   </script>
 </body>
 </html>
