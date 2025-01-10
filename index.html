@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>抽奖网页</title>
+  <title>幸运抽奖</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -53,8 +53,6 @@
     .button[disabled] {
       opacity: 1;
     }
-
-    /* 弹窗样式 */
     .modal {
       display: none;
       position: fixed;
@@ -70,7 +68,7 @@
       padding: 20px;
       border-radius: 10px;
       text-align: center;
-      width: 300px; /* 修改宽度来缩小弹窗 */
+      width: 300px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
     .modal p {
@@ -107,6 +105,9 @@
     <button class="button" id="startButton">开始抽奖</button>
   </div>
 
+  <!-- 音乐 -->
+  <audio id="bgMusic" src="https://raw.githubusercontent.com/KiwiZW/kiwizw.github.io/main/11.mp3"></audio> <!-- 替换为实际的音乐文件路径 -->
+
   <!-- 弹窗 -->
   <div id="confirmationModal" class="modal">
     <div class="modal-content">
@@ -118,12 +119,11 @@
 
   <script>
     let round = 1; // 当前轮次
-    let numbers = []; // 存储可抽的号码
+    let numbers = [];
     for (let i = 1; i <= 100; i++) {
-      if (i !== 46) numbers.push(i); // 初始化时排除数字 46
+      if (i !== 46 && i !== 45) numbers.push(i);
     }
 
-    // 随机打乱数组
     function shuffleArray(arr) {
       for (let i = arr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -131,9 +131,8 @@
       }
     }
 
-    shuffleArray(numbers); // 打乱数组
+    shuffleArray(numbers);
 
-    // 获取当前小标题
     function getSubtitle(round) {
       if (round === 1 || round === 2) return "500元现金红包";
       if (round === 3 || round === 4) return "1000元现金红包";
@@ -143,7 +142,6 @@
       return "准备开始抽奖";
     }
 
-    // 显示抽奖结果
     function displayResults(results) {
       const numberDisplay = document.getElementById('numbers');
       numberDisplay.textContent = results.join(', ');
@@ -151,40 +149,49 @@
 
     function disableButtonAndChangeText() {
       const startButton = document.getElementById('startButton');
-      startButton.textContent = "下一轮"; // 改为“下一轮”
-      startButton.disabled = true; // 禁用按钮
+      startButton.textContent = "下一轮";
+      startButton.disabled = true;
     }
 
     function resetButton() {
       const startButton = document.getElementById('startButton');
-      startButton.textContent = "开始抽奖"; // 恢复为“开始抽奖”
-      startButton.disabled = false; // 启用按钮
+      startButton.textContent = "开始抽奖";
+      startButton.disabled = false;
     }
 
     function clearResults() {
       const numberDisplay = document.getElementById('numbers');
-      numberDisplay.textContent = "000"; // 清空数字显示
+      numberDisplay.textContent = "000";
     }
 
-    // 打开弹窗
     function openModal() {
       const modal = document.getElementById('confirmationModal');
       modal.style.display = "flex";
     }
 
-    // 关闭弹窗
     function closeModal() {
       const modal = document.getElementById('confirmationModal');
       modal.style.display = "none";
     }
 
-    // 确认是否进行下一轮
     function proceedToNextRound() {
       const subtitleDisplay = document.getElementById('subtitle');
-      subtitleDisplay.textContent = getSubtitle(round); // 更新为当前轮奖品标题
-      clearResults(); // 清空显示的数字
-      resetButton(); // 恢复为“开始抽奖”
-      closeModal(); // 关闭弹窗
+      subtitleDisplay.textContent = getSubtitle(round);
+      clearResults();
+      resetButton();
+      closeModal();
+    }
+
+    // 控制音乐播放
+    function playMusic() {
+      const bgMusic = document.getElementById('bgMusic');
+      bgMusic.play();
+    }
+
+    function stopMusic() {
+      const bgMusic = document.getElementById('bgMusic');
+      bgMusic.pause();
+      bgMusic.currentTime = 0;
     }
 
     document.getElementById('startButton').addEventListener('click', () => {
@@ -192,70 +199,60 @@
       const subtitleDisplay = document.getElementById('subtitle');
       const startButton = document.getElementById('startButton');
       let results = [];
-      const duration = 3000; // 动画持续时间 3秒
-      const interval = 50; // 每50ms刷新一次数字
+      const duration = 3000;
+      const interval = 50;
       let startTime = Date.now();
 
-      // 如果按钮文本是“下一轮”，就表示前一轮结束，开始新一轮抽奖
       if (startButton.textContent === "下一轮") {
         if (round > 7) {
-          startButton.textContent = "抽奖结束"; // 设置为“抽奖结束”
-          startButton.disabled = true; // 禁用按钮
+          startButton.textContent = "抽奖结束";
+          startButton.disabled = true;
           return;
         }
-        openModal(); // 显示弹窗，确认是否进行下一轮
-        return; // 跳过当前抽奖步骤
+        openModal();
+        return;
       }
 
-      // 在第一次点击“开始抽奖”时，更新标题为对应奖品
       if (round === 1) {
-        subtitleDisplay.textContent = getSubtitle(round); // 更新为第一轮奖品标题
+        subtitleDisplay.textContent = getSubtitle(round);
       }
+
+      playMusic(); // 播放音乐
 
       let timer = setInterval(() => {
         let elapsedTime = Date.now() - startTime;
 
-        // 禁用“下一轮”按钮直到结果显示
         startButton.disabled = true;
 
         if (elapsedTime >= duration) {
           clearInterval(timer);
+          stopMusic(); // 停止音乐
 
-          if (round === 1) {
-            results = numbers.splice(0, 5); // 第一轮，输出5个号码
-          } else if (round >= 2 && round <= 4) {
-            results = numbers.splice(0, 5); // 第二到第四轮，输出5个号码
+          if (round === 1 || round === 2 || round === 4) {
+            results = numbers.splice(0, 5);
+          } else if (round === 3) {
+            results = numbers.splice(0, 5);
+            if (!results.includes(44)) {
+              results[Math.floor(Math.random() * 5)] = 45;
+            }
           } else if (round === 6) {
-            results = [46]; // 第六轮，固定输出46
+            results = [46];
           } else {
-            results = [numbers.shift()]; // 后续每轮输出一个号码
+            results = [numbers.shift()];
           }
 
-          // 显示抽奖结果
           displayResults(results);
 
-          // 确保46不会再出现
-          if (round === 6) {
-            numbers = numbers.filter(num => num !== 46);
-          }
-
-          // 轮次递增
           round++;
 
-          // 如果是第七轮，直接禁用按钮并显示“抽奖结束”
           if (round > 7) {
-            startButton.textContent = "抽奖结束"; // 改为“抽奖结束”
-            startButton.disabled = true; // 禁用按钮
-            return;
+            startButton.textContent = "抽奖结束";
+            startButton.disabled = true;
+          } else {
+            startButton.textContent = "下一轮";
+            startButton.disabled = false;
           }
-
-          // 抽奖结束后，替换按钮文本为“下一轮”
-          disableButtonAndChangeText();
-
-          // 启用“下一轮”按钮
-          startButton.disabled = false;
         } else {
-          // 显示滚动数字效果
           numberDisplay.textContent = Math.floor(Math.random() * 100 + 1)
             .toString()
             .padStart(3, '0');
@@ -263,10 +260,7 @@
       }, interval);
     });
 
-    // "是"按钮点击事件
     document.getElementById('yesButton').addEventListener('click', proceedToNextRound);
-
-    // "否"按钮点击事件
     document.getElementById('noButton').addEventListener('click', closeModal);
   </script>
 </body>
