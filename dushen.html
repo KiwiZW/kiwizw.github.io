@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>抽奖网页</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: url('1.jpg') no-repeat center center fixed; /* 替换为实际图片路径 */
+      background-size: cover;
+    }
+    .container {
+      position: relative;
+      width: 80%;
+      max-width: 800px;
+      text-align: center;
+    }
+    .title {
+      font-size: 3.5rem;
+      margin: 10px 0;
+      color: #f6ac65;
+    }
+    .subtitle {
+      font-size: 2.2rem;
+      font-weight: 900;
+      margin: 20px 0;
+      color: #ffff00;
+    }
+    .numbers {
+      font-size: 4.5rem;
+      font-weight: bold;
+      margin: 30px 0;
+      color: #f6ac65;
+    }
+    .button {
+      padding: 15px 40px;
+      font-size: 1.8rem;
+      color: #FFFFFF;
+      background-color: #bd1b23;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      width: 250px;
+      margin-top: 20px;
+    }
+    .button:hover {
+      background-color: #ff5e7e;
+      transform: scale(1.05);
+    }
+    .button[disabled] {
+      opacity: 1;
+    }
+
+    /* 设置面板样式 */
+    .settings-panel {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 250px;
+      height: auto;
+      background-color: white; /* 变为白色背景 */
+      color: #333;
+      padding: 20px;
+      display: none;
+      flex-direction: column;
+      align-items: flex-start;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    .settings-panel.open {
+      display: flex;
+    }
+    .settings-panel input,
+    .settings-panel select {
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 1.2rem;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+    .settings-panel button {
+      padding: 10px 20px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      margin-top: 20px;
+      transition: background-color 0.3s;
+    }
+    .settings-panel button:hover {
+      background-color: #45a049;
+    }
+
+    .toggle-button {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 1.5rem;
+      background-color: #ff5e7e;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .toggle-button:hover {
+      background-color: #e04a58;
+    }
+
+    /* 导入号码弹窗 */
+    .import-dialog {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .import-dialog.open {
+      display: flex;
+    }
+    .import-dialog-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 400px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .import-dialog-content textarea {
+      width: 100%;
+      height: 200px;
+      font-size: 1.2rem;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+    .import-dialog-content button {
+      padding: 10px 20px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      margin-top: 20px;
+      transition: background-color 0.3s;
+    }
+    .import-dialog-content button:hover {
+      background-color: #45a049;
+    }
+    .close-import-dialog {
+      font-size: 1.5rem;
+      background-color: #e04a58;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-top: 10px;
+      display: inline-block;
+    }
+    .close-import-dialog:hover {
+      background-color: #c13b44;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="title">幸运抽奖</h1>
+    <p class="subtitle" id="subtitle">准备开始抽奖</p>
+    <div class="numbers" id="numbers">000</div>
+    <button class="button" id="startButton" disabled>开始抽奖</button>
+  </div>
+
+  <!-- 设置面板 -->
+  <div id="settingsPanel" class="settings-panel">
+    <h2>设置抽奖</h2>
+    <div>
+      <label for="prizeInput">每轮奖品:</label>
+      <input type="text" id="prizeInput" placeholder="输入奖品名称">
+    </div>
+    <div>
+      <label for="winnersInput">中奖人数:</label>
+      <input type="number" id="winnersInput" value="1" min="1">
+    </div>
+    <button id="saveSettingsButton">保存设置</button>
+    <button id="importNumbersButton">导入号码</button>
+  </div>
+
+  <button class="toggle-button" id="toggleSettingsButton">设置</button>
+
+  <!-- 导入号码弹窗 -->
+  <div id="importDialog" class="import-dialog">
+    <div class="import-dialog-content">
+      <h2>导入号码</h2>
+      <textarea id="importTextarea" placeholder="每行一个号码"></textarea>
+      <button id="importButton">导入</button>
+      <button class="close-import-dialog" id="closeImportDialog">关闭</button>
+    </div>
+  </div>
+
+  <!-- 音乐 -->
+  <audio id="bgMusic" src="11.mp3"></audio> <!-- 替换为实际的音乐文件路径 -->
+
+  <script>
+    let round = 1;
+    let numbers = [];
+    let winnersCount = 1;
+    let prize = "奖品名称";
+    let validNumbers = [];
+
+    for (let i = 1; i <= 100; i++) {
+      numbers.push(i);
+    }
+
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+    }
+
+    shuffleArray(numbers);
+
+    function displayResults(results) {
+      const numberDisplay = document.getElementById('numbers');
+      numberDisplay.textContent = results.join(', ');
+    }
+
+    function resetButton() {
+      const startButton = document.getElementById('startButton');
+      startButton.textContent = "开始抽奖";
+      startButton.disabled = false;
+    }
+
+    function clearResults() {
+      const numberDisplay = document.getElementById('numbers');
+      numberDisplay.textContent = "000";
+    }
+
+    function playMusic() {
+      const bgMusic = document.getElementById('bgMusic');
+      bgMusic.play();
+    }
+
+    function stopMusic() {
+      const bgMusic = document.getElementById('bgMusic');
+      bgMusic.pause();
+      bgMusic.currentTime = 0;
+    }
+
+    // 检查中奖人数是否大于剩余号码
+    function checkWinnersCount() {
+      if (winnersCount > validNumbers.length) {
+        alert("中奖人数不能大于剩余的可用号码！");
+        return false;
+      }
+      return true;
+    }
+
+    // 切换设置面板显示/隐藏
+    document.getElementById('toggleSettingsButton').addEventListener('click', () => {
+      const settingsPanel = document.getElementById('settingsPanel');
+      settingsPanel.classList.toggle('open');
+    });
+
+    // 保存设置
+    document.getElementById('saveSettingsButton').addEventListener('click', () => {
+      const prizeInput = document.getElementById('prizeInput').value;
+      const winnersInput = document.getElementById('winnersInput').value;
+
+      prize = prizeInput || "奖品名称";
+      winnersCount = parseInt(winnersInput) || 1;
+
+      // 检查中奖人数
+      if (!checkWinnersCount()) return;
+
+      // 更新奖品名称
+      const subtitleDisplay = document.getElementById('subtitle');
+      subtitleDisplay.textContent = prize;
+
+      alert("设置已保存!");
+
+      // 确保按钮可以继续使用
+      resetButton();
+    });
+
+    // 导入号码按钮
+    document.getElementById('importNumbersButton').addEventListener('click', () => {
+      document.getElementById('importDialog').classList.add('open');
+    });
+
+    // 导入号码功能
+    document.getElementById('importButton').addEventListener('click', () => {
+      const importTextarea = document.getElementById('importTextarea').value;
+      validNumbers = importTextarea.split('\n').map(num => parseInt(num.trim(), 10)).filter(num => !isNaN(num));
+      alert("号码导入成功!");
+      document.getElementById('importDialog').classList.remove('open');
+      resetButton(); // 确保按钮可以继续使用
+    });
+
+    // 关闭导入号码弹窗
+    document.getElementById('closeImportDialog').addEventListener('click', () => {
+      document.getElementById('importDialog').classList.remove('open');
+    });
+
+    // 点击开始抽奖
+    document.getElementById('startButton').addEventListener('click', () => {
+      const numberDisplay = document.getElementById('numbers');
+      const subtitleDisplay = document.getElementById('subtitle');
+      let results = [];
+      const duration = 3000; // 动画持续时间 3秒
+      const interval = 50; // 每50ms刷新一次数字
+      let startTime = Date.now();
+      playMusic();
+
+      // 检查中奖人数是否大于剩余号码
+      if (!checkWinnersCount()) {
+        return; // 不继续抽奖
+      }
+
+      let timer = setInterval(() => {
+        let elapsedTime = Date.now() - startTime;
+
+        if (elapsedTime >= duration) {
+          clearInterval(timer);
+
+          if (validNumbers.length > 0) {
+            results = [];
+            for (let i = 0; i < winnersCount; i++) {
+              results.push(validNumbers.splice(Math.floor(Math.random() * validNumbers.length), 1)[0]);
+            }
+          } else {
+            results = [numbers.shift()];
+          }
+
+          subtitleDisplay.textContent = prize;
+
+          displayResults(results);
+
+          // 判断号码是否抽完
+          if (validNumbers.length === 0) {
+            document.getElementById('startButton').disabled = true;
+            document.getElementById('startButton').textContent = "号码已抽完";
+          }
+          stopMusic();
+        } else {
+          numberDisplay.textContent = Math.floor(Math.random() * 100) + 1;
+        }
+      }, interval);
+    });
+  </script>
+</body>
+</html>
