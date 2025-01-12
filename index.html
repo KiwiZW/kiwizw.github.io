@@ -14,7 +14,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background: url('1.jpg') no-repeat center center fixed; /* 替换为实际图片路径 */
+      background: url('1.jpg') no-repeat center center fixed; 
       background-size: cover;
     }
     .title {
@@ -121,7 +121,7 @@
     let round = 1; // 当前轮次
     let numbers = [];
     for (let i = 1; i <= 100; i++) {
-      if (i !== 46 && i !== 87) numbers.push(i);
+      numbers.push(i);
     }
 
     function shuffleArray(arr) {
@@ -232,11 +232,7 @@
             results = numbers.splice(0, 5);
           } else if (round === 3) {
             results = numbers.splice(0, 5);
-            if (!results.includes(46)) {
-              results[Math.floor(Math.random() * 5)] = 46;
-            }
-          } else if (round === 6) {
-            results = [87];
+			
           } else {
             results = [numbers.shift()];
           }
